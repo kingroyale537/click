@@ -615,3 +615,13 @@ def test_powershell_format_completion_escapes_help():
     # produced by ZshComplete.
     item = CompletionItem("--at")
     assert pc.format_completion(item) == "plain\n--at\n_"
+
+
+def test_powershell_format_completion_escapes_value():
+    pc = PowerShellComplete(Command("x"), {}, "x", "_X_COMPLETE")
+    # Newlines (LF and CRLF) in completion values also collapse to spaces
+    # so the value stays on a single line and preserves the 3-line protocol.
+    item = CompletionItem("first\nsecond\r\nthird", help="Fruit")
+    result = pc.format_completion(item)
+    assert result == "plain\nfirst second  third\nFruit"
+    assert len(result.splitlines()) == 3

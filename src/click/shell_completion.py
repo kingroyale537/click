@@ -537,14 +537,15 @@ class PowerShellComplete(ShellComplete):
     def format_completion(self, item: CompletionItem[str]) -> str:
         # PowerShell parses the response by splitting on newlines and
         # consuming three lines per completion (type, value, help).
-        # Multi-line help text would break that framing, so collapse
+        # Multi-line values or help text would break that framing, so collapse
         # newlines and carriage returns to spaces. The literal "_"
         # sentinel matches what ZshComplete uses for "no help text".
+        value = str(item.value).replace("\r", " ").replace("\n", " ")
         if item.help:
             help_ = item.help.replace("\r", " ").replace("\n", " ")
         else:
             help_ = "_"
-        return f"{item.type}\n{item.value}\n{help_}"
+        return f"{item.type}\n{value}\n{help_}"
 
 
 _available_shells: t.Final[dict[str, type[ShellComplete]]] = {
